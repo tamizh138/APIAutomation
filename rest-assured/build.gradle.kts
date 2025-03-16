@@ -8,7 +8,7 @@
 
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
-    application
+    java
 }
 
 repositories {
@@ -19,14 +19,20 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
+    implementation("io.rest-assured:rest-assured:5.5.1")
+    testImplementation("org.testng:testng:7.9.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+    testImplementation("org.assertj:assertj-core:3.26.0")
+    testImplementation("io.rest-assured:json-schema-validator:5.5.1")
 }
 
-testing {
-    suites {
-        // Configure the built-in test suite
-        val test by getting(JvmTestSuite::class) {
-            // Use JUnit Jupiter test framework
-            useJUnitJupiter("5.11.1")
+tasks.test {
+    useTestNG {
+        if(System.getProperty("RunSmokeTest","false").equals("true")) {
+            suites("/src/test/resources/TestSuites/SmokeSuite.xml")
+        }
+        if(System.getProperty("RunSlowTests","false").equals("true")) {
+            suites("/src/test/resources/TestSuites/SlowTests.xml")
         }
     }
 }
@@ -38,7 +44,3 @@ java {
     }
 }
 
-application {
-    // Define the main class for the application.
-    mainClass = "org.example.App"
-}

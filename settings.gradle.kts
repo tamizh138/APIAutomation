@@ -12,4 +12,4 @@ plugins {
 }
 
 rootProject.name = "APIAutomation"
-include("app")
+include("rest-assured")
