@@ -20,10 +20,11 @@ dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
     implementation("io.rest-assured:rest-assured:5.5.1")
-    testImplementation("org.testng:testng:7.9.0")
+    implementation("org.testng:testng:7.9.0")
     implementation("com.google.code.gson:gson:2.10.1")
     testImplementation("org.assertj:assertj-core:3.26.0")
     testImplementation("io.rest-assured:json-schema-validator:5.5.1")
+    implementation("com.aventstack:extentreports:5.1.2")
 }
 
 tasks.test {

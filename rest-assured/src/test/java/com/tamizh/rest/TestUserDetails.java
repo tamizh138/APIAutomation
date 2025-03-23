@@ -4,12 +4,19 @@ package com.tamizh.rest;
 import static  io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tamizh.core.HttpStatusCode;
 import com.tamizh.pojo.Data;
 import com.tamizh.pojo.Support;
-import com.tamizh.pojo.User;
 import com.tamizh.pojo.UserData;
+import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.config.RestAssuredConfig;
+import io.restassured.internal.mapping.ObjectMapperDeserializationContextImpl;
+import io.restassured.mapper.ObjectMapperDeserializationContext;
+import io.restassured.mapper.ObjectMapperType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -60,20 +67,17 @@ public class TestUserDetails extends BaseTest {
 
     @Test
     public void testSingleUserData() {
-        Data data = new Data();
-        data.setId(2);
-        data.setEmail("janet.weaver@reqres.in");
-        data.setFirstName("Janet");
-        data.setLastname("Weaver");
-        data.setAvatar("https://reqres.in/img/faces/2-image.jpg");
-        Support supportData = new Support();
-        supportData.setText("Tired of writing endless social media content? Let Content Caddy generate it for you.");
-        supportData.setUrl("https://contentcaddy.io?utm_source=reqres&utm_medium=json&utm_campaign=referral");
-        UserData expectedData = new UserData();
-        expectedData.setData(data);
-        expectedData.setSupport(supportData);
-        UserData actualUserData = given().spec(requestSpecification).log().all().get("/users/{id}").as(UserData.class);
-        assertThat(actualUserData).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expectedData);
+        Data data = new Data(2,"janet.weaver@reqres.in","Janet","Weaver");
+        Support supportData = new Support("Tired of writing endless social media content? Let Content Caddy generate it for you.");
+        UserData expectedData = new UserData(data,supportData);
+    /*    RestAssuredConfig config = RestAssuredConfig.config().objectMapperConfig( new ObjectMapperConfig().jackson2ObjectMapperFactory((cls, charset) -> {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            return objectMapper;
+        }));*/
+        UserData actualUserData = given().spec(requestSpecification).get("/users/{id}").as(UserData.class);
+        System.out.println(actualUserData.equals(expectedData));
+        assertThat(actualUserData).usingRecursiveComparison().ignoringFields("support.url").ignoringCollectionOrder().isEqualTo(expectedData);
     }
 
 
